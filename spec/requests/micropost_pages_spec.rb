@@ -42,4 +42,16 @@ describe "Micropost pages" do
       end
     end
   end
+  
+  
+  describe "can't delete someone else's micropost" do
+    let(:bob)  { FactoryGirl.create(:user) }
+    let!(:m1) { FactoryGirl.create(:micropost, user: bob, content: "Foo") }
+    let!(:m2) { FactoryGirl.create(:micropost, user: bob, content: "Bar") }
+    
+    before {visit user_path(bob)}
+    
+    it { should have_content('Foo') } 
+    it { should_not have_link('delete') }
+  end
 end

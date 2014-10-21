@@ -31,8 +31,23 @@ describe "Static pages" do
           expect(page).to have_selector("li##{item.id}", text: item.content)
         end
       end
+      
+      describe "should count the microposts" do
+        it { should have_content("#{user.microposts.count}") }
+        it { should have_content('micropost'.pluralize(user.microposts.count))}
+      end
+      
+      describe "follower/following counts" do
+        let(:other_user) { FactoryGirl.create(:user) }
+        before do
+          other_user.follow!(user)
+          visit root_path
+        end
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
+      end
     end
-    
   end
 
   describe "Help page" do
