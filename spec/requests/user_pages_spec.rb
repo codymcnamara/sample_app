@@ -81,7 +81,7 @@ describe "User pages" do
 
       describe "following a user" do
         before { visit user_path(other_user) }
-
+      
         it "should increment the followed user count" do
           expect do
             click_button "Follow"
@@ -98,6 +98,13 @@ describe "User pages" do
           before { click_button "Follow" }
           it { should have_xpath("//input[@value='Unfollow']") }
         end
+        
+        describe "follower/following counts" do
+          before { click_button "Follow" }
+          it { should have_link("0 following", href: following_user_path(other_user)) }
+          it { should have_link("1 followers", href: followers_user_path(other_user)) }
+        end
+        
       end
 
       describe "unfollowing a user" do
@@ -123,6 +130,9 @@ describe "User pages" do
           it { should have_xpath("//input[@value='Follow']") }
         end
       end
+      
+      
+      
     end
   end
 

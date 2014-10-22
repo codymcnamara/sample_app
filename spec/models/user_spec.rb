@@ -178,6 +178,59 @@ describe User do
     end
   end
   
+  describe "relationship associations" do 
+    let(:juliet) { FactoryGirl.create(:user) }
+    let(:juliet) { FactoryGirl.create(:user) }
+    before do
+      @user.save
+      @user.follow!(juliet)
+      juliet.follow!(@user) #when i wrote the first two tests this line wasn't there
+    end
+    
+    it "should destroy related relationships if follower is destroyed" do 
+      relationships = @user.relationships.to_a
+      @user.destroy
+      expect(relationships).not_to be_empty
+      relationships.each do |relationship|
+        expect(Relationship.where(id: relationship.id)).to be_empty
+      end
+    end
+    
+    it "should destroy related relationships if followed_user is destroyed" do
+      reverse_relationships = juliet.reverse_relationships.to_a
+      juliet.destroy
+      expect(reverse_relationships).not_to be_empty
+      reverse_relationships.each do |reverse_relationship|
+        expect(Relationship.where(id: reverse_relationship.id)).to be_empty
+      end
+    end
+    
+
+    it "should destroy reverse and normal relationships of user" do 
+      #wanted to add "juliet.follow(@user)" here instead of above but it wouldn't let me 
+      relationships = @user.relationships.to_a
+      reverse_relationships = @user.reverse_relationships.to_a
+      
+      @user.destroy
+      
+      expect(reverse_relationships).not_to be_empty
+      expect(relationships).not_to be_empty
+      
+      reverse_relationships.each do |reverse_relationship|
+        expect(Relationship.where(id: reverse_relationship.id)).to be_empty
+      end
+      
+      relationships.each do |relationship|
+        expect(Relationship.where(id: relationship.id)).to be_empty
+      end
+    end
+      
+  end
+      
+    
+    
+  
+  
   describe "following" do
     let(:other_user) { FactoryGirl.create(:user) }
     before do
